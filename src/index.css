@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* === DARK DESIGN TOKENS === */
+:root {
+  --color-teal: #1DB87E;
+  --color-teal-light: rgba(29,184,126,0.12);
+  --color-teal-dark: #16915F;
+  --color-amber: #E08C2A;
+  --color-amber-light: rgba(224,140,42,0.12);
+  --color-red: #F09595;
+  --color-red-bg: rgba(240,149,149,0.15);
+  --color-purple: #9B93EA;
+  --color-blue: #5BA3E8;
+  --color-green: #72B32A;
+  --color-pink: #E0678E;
+  --color-orange: #E07B39;
+
+  /* Dark backgrounds */
+  --bg-primary: #111111;
+  --bg-secondary: #1A1A1A;
+  --bg-card: #1E1E1E;
+  --bg-elevated: #252525;
+  --bg-sidebar: #161616;
+  --bg-input: #252525;
+
+  /* Text */
+  --text-primary: #F0F0F0;
+  --text-secondary: #909090;
+  --text-muted: #555555;
+
+  /* Borders */
+  --border: rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.12);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+
+  --sidebar-width: 220px;
+  --font: 'Inter', system-ui, sans-serif;
+  --transition: 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  height: 100%;
+  font-family: var(--font);
+  font-weight: 400;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+#root { height: 100%; }
+button { font-family: var(--font); cursor: pointer; border: none; background: none; }
+input, textarea { font-family: var(--font); color-scheme: dark; }
+a { text-decoration: none; color: inherit; }
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+
+/* === ANIMATIONS === */
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-slide-up { animation: slideUp 0.3s ease both; }
+.animate-fade-in { animation: fadeIn 0.2s ease both; }

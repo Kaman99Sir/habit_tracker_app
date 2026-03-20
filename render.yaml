@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: habitual-app
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/habitual.db
+    disk:
+      name: habitual-sqlite-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
