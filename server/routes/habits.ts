@@ -91,6 +91,13 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   return res.json({ ok: true });
 });
 
+// --- Hard Delete Habit ---
+router.delete('/:id/hard', (req: AuthRequest, res: Response) => {
+  const id = req.params.id as string;
+  db.delete(habits).where(and(eq(habits.id, id), eq(habits.userId, req.userId!))).run();
+  return res.json({ ok: true });
+});
+
 // --- Logs CRUD ---
 router.get('/:id/logs', (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;

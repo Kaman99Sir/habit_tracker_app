@@ -40,6 +40,7 @@ export const apiHabits = {
   create: (data: Partial<Habit & HabitSchedule>) => fetcher<Habit>('/habits', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: string, data: Partial<Habit>) => fetcher<Habit>(`/habits/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   archive: (id: string) => fetcher<{ ok: true }>(`/habits/${id}`, { method: 'DELETE' }),
+  delete: (id: string) => fetcher<{ ok: true }>(`/habits/${id}/hard`, { method: 'DELETE' }),
   
   // Logs
   getLogs: (id: string) => fetcher<HabitLog[]>(`/habits/${id}/logs`),

@@ -20,7 +20,7 @@ interface HabitSheetProps {
 }
 
 export default function HabitSheet({ open, onClose, editHabit }: HabitSheetProps) {
-  const { addHabit, updateHabit } = useApp();
+  const { addHabit, updateHabit, deleteHabit } = useApp();
   const isEdit = !!editHabit;
 
   const [form, setForm] = useState({
@@ -243,9 +243,17 @@ export default function HabitSheet({ open, onClose, editHabit }: HabitSheetProps
             </div>
 
             {/* Sticky save */}
-            <div style={{ padding: '10px 18px 28px', borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+            <div style={{ padding: '10px 18px 28px', borderTop: '1px solid var(--border)', background: 'var(--bg-secondary)', display: 'flex', gap: '10px' }}>
+              {isEdit && (
+                <button onClick={() => { deleteHabit(editHabit.id); onClose(); }} style={{
+                  padding: '13px', background: 'var(--bg-elevated)', color: '#FF3B30',
+                  borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 500, cursor: 'pointer', border: '1px solid var(--border)'
+                }}>
+                  Delete
+                </button>
+              )}
               <button onClick={handleSave} disabled={!form.name.trim()} style={{
-                width: '100%', padding: '13px',
+                flex: 1, padding: '13px',
                 background: form.name.trim() ? 'var(--color-teal)' : 'var(--bg-elevated)',
                 color: form.name.trim() ? '#fff' : 'var(--text-muted)',
                 borderRadius: 'var(--radius-md)', fontSize: 14, fontWeight: 500,

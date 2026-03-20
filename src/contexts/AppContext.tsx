@@ -27,6 +27,7 @@ interface AppContextType extends AppState {
   addHabit: (habit: Omit<Habit, 'id' | 'createdAt' | 'archived'>) => void;
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   archiveHabit: (id: string) => void;
+  deleteHabit: (id: string) => void;
   toggleCompletion: (habitId: string) => void;
   isCompletedToday: (habitId: string) => boolean;
   addJournalEntry: (habitId: string, date: string, text: string) => void;
@@ -170,6 +171,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [setState, user]);
 
+  const deleteHabit = useCallback(async (id: string) => {
+    setState(s => ({
+      ...s,
+      habits: s.habits.filter(h => h.id !== id),
+      completions: s.completions.filter(c => c.habitId !== id),
+      journalEntries: s.journalEntries.filter(j => j.habitId !== id),
+    }));
+
+    if (user) {
+      try {
+        await apiHabits.delete(id);
+      } catch (err) {
+        console.error('Failed to delete remotely', err);
+      }
+    }
+  }, [setState, user]);
+
   const isCompletedToday = useCallback((habitId: string) => {
     const today = todayStr();
     return state.completions.some(c => c.habitId === habitId && c.date === today);
@@ -301,6 +319,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addHabit,
     updateHabit,
     archiveHabit,
+    deleteHabit,
     toggleCompletion,
     isCompletedToday,
     addJournalEntry,
