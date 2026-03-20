@@ -180,7 +180,6 @@ export default function Dashboard() {
                   background: 'var(--color-teal)', borderRadius: 99, transition: 'width 0.4s ease',
                 }} />
               </div>
-              </div>
             </div>
           </div>
         </div>
