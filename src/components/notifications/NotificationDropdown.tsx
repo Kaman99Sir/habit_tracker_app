@@ -1,6 +1,7 @@
 import React from 'react';
 import type { NotificationItem } from '../../hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   notifications: NotificationItem[];
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default function NotificationDropdown({ notifications, onMarkRead, onClose }: Props) {
+  const navigate = useNavigate();
+
   return (
     <div style={{
       position: 'absolute', top: 50, right: 0,
@@ -34,9 +37,15 @@ export default function NotificationDropdown({ notifications, onMarkRead, onClos
                 padding: '16px', borderBottom: '1px solid var(--border)',
                 background: n.status === 'unread' ? 'rgba(79, 209, 197, 0.05)' : 'transparent',
                 transition: 'background 0.2s',
-                display: 'flex', gap: 12, alignItems: 'flex-start'
+                display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer'
               }}
-              onClick={() => n.status === 'unread' && onMarkRead(n.id)}
+              onClick={() => {
+                if (n.status === 'unread') onMarkRead(n.id);
+                if (n.habitId) {
+                  navigate(`/habit/${n.habitId}`);
+                  onClose();
+                }
+              }}
             >
               <div style={{
                 width: 8, height: 8, borderRadius: '50%',

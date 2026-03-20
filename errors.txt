@@ -1,0 +1,3 @@
+src/contexts/AppContext.tsx(178,102): error TS6133: 'perfectDays' is declared but its value is never read.
+src/pages/Dashboard.tsx(179,63): error TS2345: Argument of type '{ totalCompletions: number; longestStreak: number; }' is not assignable to parameter of type 'MilestoneStats'.
+  Type '{ totalCompletions: number; longestStreak: number; }' is missing the following properties from type 'MilestoneStats': perfectWeeks, perfectMonths, firstCompletion

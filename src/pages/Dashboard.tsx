@@ -176,9 +176,10 @@ export default function Dashboard() {
               <div style={{ height: 3, background: 'var(--bg-elevated)', borderRadius: 99, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
-                  width: `${nextMilestone.nextProgressPercent({ totalCompletions, longestStreak })}%`,
+                  width: `${nextMilestone.nextProgressPercent({ totalCompletions, longestStreak, perfectWeeks: 0, perfectMonths: 0, firstCompletion: false })}%`,
                   background: 'var(--color-teal)', borderRadius: 99, transition: 'width 0.4s ease',
                 }} />
+              </div>
               </div>
             </div>
           </div>

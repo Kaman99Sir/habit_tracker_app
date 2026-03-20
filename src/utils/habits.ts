@@ -1,4 +1,4 @@
-import { format, subDays, isToday, parseISO, startOfDay } from 'date-fns';
+import { format, subDays, parseISO, startOfDay } from 'date-fns';
 
 export type FrequencyType = 'daily' | 'specific' | 'times';
 

@@ -1,11 +1,19 @@
+export interface MilestoneStats {
+  totalCompletions: number;
+  longestStreak: number;
+  perfectWeeks: number;
+  perfectMonths: number;
+  firstCompletion: boolean;
+}
+
 export interface Milestone {
   id: string;
   title: string;
   message: string;
   icon: string;
-  condition: (stats: { totalCompletions: number; longestStreak: number; perfectWeeks: number; perfectMonths: number; firstCompletion: boolean }) => boolean;
-  progressLabel: (stats: { totalCompletions: number; longestStreak: number }) => string;
-  nextProgressPercent: (stats: { totalCompletions: number; longestStreak: number }) => number;
+  condition: (stats: MilestoneStats) => boolean;
+  progressLabel: (stats: MilestoneStats) => string;
+  nextProgressPercent: (stats: MilestoneStats) => number;
   sortOrder: number;
 }
 

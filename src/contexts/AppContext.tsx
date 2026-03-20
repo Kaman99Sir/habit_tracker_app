@@ -175,7 +175,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return state.completions.some(c => c.habitId === habitId && c.date === today);
   }, [state.completions]);
 
-  const checkMilestones = useCallback((completions: Completion[], habits: Habit[], earned: string[], perfectDays: string[]) => {
+  const checkMilestones = useCallback((completions: Completion[], habits: Habit[], earned: string[]) => {
     const totalCompletions = completions.length;
     const allStreaks = habits.filter(h => !h.archived).map(h => getStreak(h.id, completions));
     const longestStreak = allStreaks.length > 0 ? Math.max(...allStreaks) : 0;
@@ -220,7 +220,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         ? [...s.perfectDays, today]
         : s.perfectDays.filter(d => d !== today || allDoneToday);
 
-      const newMilestone = !alreadyDone ? checkMilestones(newCompletions, s.habits, s.earnedMilestones, newPerfectDays) : null;
+      const newMilestone = !alreadyDone ? checkMilestones(newCompletions, s.habits, s.earnedMilestones) : null;
       const newEarned = newMilestone ? [...s.earnedMilestones, newMilestone] : s.earnedMilestones;
 
       return {

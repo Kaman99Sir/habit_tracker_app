@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNotifications } from '../../hooks/useNotifications';
-import NotificationDropdown from './NotificationDropdown';
+import NotificationDropdown from './NotificationDropdown.tsx';
 
 export default function NotificationBell() {
   const { notifications, unreadCount, markRead } = useNotifications();
