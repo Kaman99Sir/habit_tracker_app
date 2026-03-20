@@ -18,7 +18,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Init DB
-runMigrations();
+runMigrations().catch(err => {
+  console.error('Failed to run database migrations:', err);
+  process.exit(1);
+});
 
 // Routes
 app.use('/api/auth', authRouter);

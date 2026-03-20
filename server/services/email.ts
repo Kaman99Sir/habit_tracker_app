@@ -19,7 +19,7 @@ const transport = nodemailer.createTransport({
 export async function sendEmailNotification(userId: string, subject: string, message: string, settings: NotificationSettings) {
   if (!settings.enableEmail) return;
 
-  const user = db.select().from(users).where(eq(users.id, userId)).get();
+  const user = (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0];
   if (!user) return;
 
   try {

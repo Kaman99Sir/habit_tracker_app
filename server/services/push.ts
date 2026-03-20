@@ -18,7 +18,7 @@ webpush.setVapidDetails(
 export async function sendWebPush(userId: string, title: string, body: string, settings: NotificationSettings) {
   if (!settings.enablePush) return;
 
-  const subs = db.select().from(pushSubscriptions).where(eq(pushSubscriptions.userId, userId)).all();
+  const subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
   if (subs.length === 0) return;
 
   const payload = JSON.stringify({
@@ -37,11 +37,11 @@ export async function sendWebPush(userId: string, title: string, body: string, s
       }
     };
 
-    return webpush.sendNotification(pushSubscription, payload).catch(err => {
+    return webpush.sendNotification(pushSubscription, payload).catch(async err => {
       if (err.statusCode === 404 || err.statusCode === 410) {
         // Subscription has expired or is no longer valid
         console.log('[PUSH] Subscription expired, deleting', sub.endpoint);
-        db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint)).run();
+        await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, sub.endpoint));
       } else {
         console.error('[PUSH] Failed to send push', err);
       }

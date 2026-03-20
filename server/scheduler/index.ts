@@ -20,7 +20,7 @@ export function startScheduler() {
     console.log(`[CRON] Running check at ${now}`);
 
     // Get all active schedules and join with habit & user settings
-    const activeSchedules = db.select({
+    const activeSchedules = (await db.select({
       schedule: habitSchedules,
       habit: habits,
       settings: notificationSettings,
@@ -28,8 +28,7 @@ export function startScheduler() {
       .from(habitSchedules)
       .innerJoin(habits, eq(habitSchedules.habitId, habits.id))
       .innerJoin(notificationSettings, eq(habits.userId, notificationSettings.userId))
-      .where(and(eq(habitSchedules.isActive, true), eq(habits.status, 'active')))
-      .all() as any[];
+      .where(and(eq(habitSchedules.isActive, true), eq(habits.status, 'active')))) as any[];
 
     for (const { schedule, habit, settings } of activeSchedules) {
       // 1. Check if habit is scheduled for today
@@ -37,12 +36,12 @@ export function startScheduler() {
       if (!hDays.includes(dayOfWeek)) continue; // Not scheduled today
 
       // 2. Check if already completed today
-      const log = db.select().from(habitLogs)
+      const log = (await db.select().from(habitLogs)
         .where(and(
           eq(habitLogs.habitId, habit.id),
           eq(habitLogs.date, today),
           eq(habitLogs.status, 'completed')
-        )).get();
+        )).limit(1))[0];
       if (log) continue; // Already done
 
       // 3. Time calculations
@@ -75,19 +74,19 @@ export function startScheduler() {
       if (isQuiet && type !== 'escalation') continue; // Skip non-critical during quiet hours
 
       // Dedup check: Ensure we haven't already sent this EXACT type of notification today
-      const alreadySent = db.select().from(notifications)
+      const alreadySent = (await db.select().from(notifications)
         .where(and(
           eq(notifications.habitId, habit.id),
           eq(notifications.type, type),
           gt(notifications.createdAt, sql`(date('now'))`)
-        )).get();
+        )).limit(1))[0];
       
       if (alreadySent) continue;
 
       // --- Trigger Notification ---
       const notifId = generateId();
       
-      db.insert(notifications).values({
+      await db.insert(notifications).values({
         id: notifId,
         userId: habit.userId,
         habitId: habit.id,
@@ -97,9 +96,9 @@ export function startScheduler() {
         scheduledFor: new Date().toISOString(),
         sentAt: new Date().toISOString(),
         status: 'unread',
-      }).run();
+      });
 
-      const notifData = db.select().from(notifications).where(eq(notifications.id, notifId)).get();
+      const notifData = (await db.select().from(notifications).where(eq(notifications.id, notifId)).limit(1))[0];
 
       // Dispatch channels
       if (settings.enableInApp) {

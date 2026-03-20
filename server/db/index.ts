@@ -1,21 +1,25 @@
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { createClient, Client } from '@libsql/client';
+import { drizzle } from 'drizzle-orm/libsql';
 import path from 'path';
 import * as schema from './schema';
 
-const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), 'habitual.db');
+let client: Client;
 
-const sqlite = new Database(DB_PATH);
+if (process.env.TURSO_DATABASE_URL) {
+  client = createClient({
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+} else {
+  const DB_PATH = process.env.DATABASE_PATH || path.join(process.cwd(), 'habitual.db');
+  client = createClient({ url: `file:${DB_PATH}` });
+}
 
-// Enable WAL mode for better concurrent performance
-sqlite.pragma('journal_mode = WAL');
-sqlite.pragma('foreign_keys = ON');
-
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(client, { schema });
 
 // --- Run migrations inline (create tables if not exist) ---
-export function runMigrations() {
-  sqlite.exec(`
+export async function runMigrations() {
+  await client.executeMultiple(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -111,4 +115,4 @@ export function runMigrations() {
   console.log('✅ Database migrations complete');
 }
 
-export { sqlite };
+export { client as sqlite };

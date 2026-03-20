@@ -21,63 +21,63 @@ export function pushToUser(userId: string, event: 'notification' | 'ping', data:
 }
 
 // --- List Notifications ---
-router.get('/', (req: AuthRequest, res: Response) => {
-  const list = db.select().from(notifications)
+router.get('/', async (req: AuthRequest, res: Response) => {
+  const list = await db.select().from(notifications)
     .where(eq(notifications.userId, req.userId!))
     .orderBy(desc(notifications.createdAt))
-    .limit(50).all();
+    .limit(50);
   return res.json(list);
 });
 
 // --- Settings ---
-router.get('/settings', (req: AuthRequest, res: Response) => {
-  let settings = db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).get();
+router.get('/settings', async (req: AuthRequest, res: Response) => {
+  let settings = (await db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).limit(1))[0];
   if (!settings) {
-    db.insert(notificationSettings).values({ id: generateId(), userId: req.userId! }).run();
-    settings = db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).get()!;
+    await db.insert(notificationSettings).values({ id: generateId(), userId: req.userId! });
+    settings = (await db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).limit(1))[0]!;
   }
   return res.json(settings);
 });
 
-router.patch('/settings', (req: AuthRequest, res: Response) => {
+router.patch('/settings', async (req: AuthRequest, res: Response) => {
   const updates = req.body;
-  db.update(notificationSettings).set({ ...updates, updatedAt: new Date().toISOString() })
-    .where(eq(notificationSettings.userId, req.userId!)).run();
+  await db.update(notificationSettings).set({ ...updates, updatedAt: new Date().toISOString() })
+    .where(eq(notificationSettings.userId, req.userId!));
   
-  const updated = db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).get();
+  const updated = (await db.select().from(notificationSettings).where(eq(notificationSettings.userId, req.userId!)).limit(1))[0];
   return res.json(updated);
 });
 
 // --- Mark Read/Dismiss/Acted ---
-router.patch('/:id', (req: AuthRequest, res: Response) => {
+router.patch('/:id', async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   const { status } = req.body; // 'read' | 'dismissed' | 'acted'
   
-  db.update(notifications).set({ status })
-    .where(and(eq(notifications.id, id), eq(notifications.userId, req.userId!))).run();
+  await db.update(notifications).set({ status })
+    .where(and(eq(notifications.id, id), eq(notifications.userId, req.userId!)));
   
   return res.json({ ok: true });
 });
 
 // --- Save Web Push Subscription ---
-router.post('/push-subscribe', (req: AuthRequest, res: Response) => {
+router.post('/push-subscribe', async (req: AuthRequest, res: Response) => {
   const subscription = req.body;
   if (!subscription || !subscription.endpoint) {
     return res.status(400).json({ error: 'Invalid subscription' });
   }
 
   // Upsert pattern
-  const existing = db.select().from(pushSubscriptions).where(eq(pushSubscriptions.endpoint, subscription.endpoint)).get();
+  const existing = (await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.endpoint, subscription.endpoint)).limit(1))[0];
   if (!existing) {
-    db.insert(pushSubscriptions).values({
+    await db.insert(pushSubscriptions).values({
       id: generateId(),
       userId: req.userId!,
       endpoint: subscription.endpoint,
       p256dh: subscription.keys?.p256dh || '',
       auth: subscription.keys?.auth || '',
-    }).run();
+    });
   } else if (existing.userId !== req.userId!) {
-    db.update(pushSubscriptions).set({ userId: req.userId! }).where(eq(pushSubscriptions.endpoint, subscription.endpoint)).run();
+    await db.update(pushSubscriptions).set({ userId: req.userId! }).where(eq(pushSubscriptions.endpoint, subscription.endpoint));
   }
 
   return res.json({ ok: true });
